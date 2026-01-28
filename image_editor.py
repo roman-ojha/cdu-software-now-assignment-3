@@ -48,7 +48,7 @@ class ImageEditorApp:
         # 1. Control Panel on Left Side
         self.controls_frame = tk.Frame(
             self.root, width=250, bg="#f0f0f0", padx=10, pady=10)
-        self.controls_frame.pack(side=tk.LEFT, fill=tk.Y)
+        self.controls_frame.pack(side=tk.RIGHT, fill=tk.Y)
 
         # Section Label
         tk.Label(self.controls_frame, text="Filters & Effects",
@@ -66,11 +66,11 @@ class ImageEditorApp:
         btn_frame_rot = tk.Frame(self.controls_frame, bg="#f0f0f0")
         btn_frame_rot.pack()
         tk.Button(btn_frame_rot, text="90°", command=lambda: self.apply_rotate(
-            90)).pack(side=tk.LEFT, padx=2)
+            90)).pack(side=tk.RIGHT, padx=2)
         tk.Button(btn_frame_rot, text="180°", command=lambda: self.apply_rotate(
-            180)).pack(side=tk.LEFT, padx=2)
+            180)).pack(side=tk.RIGHT, padx=2)
         tk.Button(btn_frame_rot, text="270°", command=lambda: self.apply_rotate(
-            270)).pack(side=tk.LEFT, padx=2)
+            270)).pack(side=tk.RIGHT, padx=2)
 
         # Flip Buttons
         tk.Label(self.controls_frame, text="Flip", bg="#f0f0f0",
@@ -78,9 +78,9 @@ class ImageEditorApp:
         btn_frame_flip = tk.Frame(self.controls_frame, bg="#f0f0f0")
         btn_frame_flip.pack()
         tk.Button(btn_frame_flip, text="Horiz",
-                  command=lambda: self.apply_flip(1)).pack(side=tk.LEFT, padx=2)
+                  command=lambda: self.apply_flip(1)).pack(side=tk.RIGHT, padx=2)
         tk.Button(btn_frame_flip, text="Vert", command=lambda: self.apply_flip(
-            0)).pack(side=tk.LEFT, padx=2)
+            0)).pack(side=tk.RIGHT, padx=2)
 
         # Resize Button
         tk.Button(self.controls_frame, text="Resize Image",
@@ -118,7 +118,7 @@ class ImageEditorApp:
 
         # 2. Image Display Area at the Right Side
         self.display_frame = tk.Frame(self.root, bg="#333")
-        self.display_frame.pack(side=tk.RIGHT, fill=tk.BOTH, expand=True)
+        self.display_frame.pack(side=tk.LEFT, fill=tk.BOTH, expand=True)
 
         self.canvas = tk.Canvas(
             self.display_frame, bg="#333", highlightthickness=0)
