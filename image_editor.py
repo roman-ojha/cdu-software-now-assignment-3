@@ -19,7 +19,6 @@ class ImageEditorApp:
         # Setup UI Components
         self._setup_menu()
         self._setup_layout()
-        self._setup_status_bar()
 
     def _setup_menu(self):
         """Initializes the Menu Bar with File and Edit options."""
@@ -45,7 +44,7 @@ class ImageEditorApp:
     def _setup_layout(self):
         """Sets up the main frames with controls button on left side and image display on right side."""
 
-        # 1. Control Panel on Left Side
+        # 1. Control Panel on Right Side
         self.controls_frame = tk.Frame(
             self.root, width=250, bg="#f0f0f0", padx=10, pady=10)
         self.controls_frame.pack(side=tk.RIGHT, fill=tk.Y)
@@ -116,21 +115,25 @@ class ImageEditorApp:
         tk.Button(self.controls_frame, text="Apply Contrast",
                   command=self.apply_contrast).pack(pady=2)
 
-        # 2. Image Display Area at the Right Side
-        self.display_frame = tk.Frame(self.root, bg="#333")
-        self.display_frame.pack(side=tk.LEFT, fill=tk.BOTH, expand=True)
+        # Creating a Container that will hold both image display and status bar
+        container = tk.Frame(self.root, bg="lightgrey")
+        container.pack(side=tk.LEFT, fill=tk.BOTH, expand=True)
+
+        # 2. Image Display Area at the Left Bottom Side
+        self.display_frame = tk.Frame(container, bg="#333")
+        self.display_frame.pack(side=tk.BOTTOM, fill=tk.BOTH, expand=True)
 
         self.canvas = tk.Canvas(
             self.display_frame, bg="#333", highlightthickness=0)
         self.canvas.pack(fill=tk.BOTH, expand=True, padx=10, pady=10)
 
-    def _setup_status_bar(self):
-        """Sets up the Status Bar at the bottom."""
+        # 3. Status Bar
+        """Sets up the Status Bar at the top."""
         self.status_var = tk.StringVar()
-        self.status_var.set("Open an image to begin.")
+        self.status_var.set("Open an image to start editing.")
         self.status_bar = tk.Label(
-            self.root, textvariable=self.status_var, bd=1, relief=tk.SUNKEN, anchor=tk.W)
-        self.status_bar.pack(side=tk.BOTTOM, fill=tk.X)
+            container, textvariable=self.status_var, bd=1, relief=tk.SUNKEN, anchor=tk.W)
+        self.status_bar.pack(side=tk.TOP, fill=tk.X)
 
     # File Operations
     def open_image(self):
