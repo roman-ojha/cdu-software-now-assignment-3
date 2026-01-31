@@ -147,8 +147,41 @@ class ImageEditorApp:
 
     # Display Logic
     def display_image(self):
-        pass
+            """Converts OpenCV BGR image to Tkinter format and displays it."""
+            if self.current_image is None:
+                return
 
+            # Convert BGR from OpenCV to RGB Tkinter
+            img_rgb = cv2.cvtColor(self.current_image, cv2.COLOR_BGR2RGB)
+
+            # Resize for display if too large to maintain aspect ratio
+            h, w = img_rgb.shape[:2]
+            display_w, display_h = 800, 600
+
+            if w > display_w or h > display_h:
+                ratio = min(display_w/w, display_h/h)
+                new_w = int(w * ratio)
+                new_h = int(h * ratio)
+                img_rgb = cv2.resize(img_rgb, (new_w, new_h))
+
+            img_pil = Image.fromarray(img_rgb)
+            img_tk = ImageTk.PhotoImage(img_pil)
+
+            # Update Canvas
+            self.canvas.delete("all")
+            # Center the image
+            canvas_w = self.canvas.winfo_width()
+            canvas_h = self.canvas.winfo_height()
+            # Default center if canvas isn't drawn yet
+            if canvas_w < 1:
+                canvas_w = 800
+            if canvas_h < 1:
+                canvas_h = 600
+
+            self.canvas.create_image(
+                canvas_w//2, canvas_h//2, image=img_tk, anchor=tk.CENTER)
+            self.canvas.image = img_tk  # Keep reference to prevent garbage collection
+            
     def update_status(self, message):
         pass
 
