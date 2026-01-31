@@ -181,7 +181,16 @@ class ImageEditorApp:
             self.canvas.create_image(
                 canvas_w//2, canvas_h//2, image=img_tk, anchor=tk.CENTER)
             self.canvas.image = img_tk  # Keep reference to prevent garbage collection
-            
+
+    def update_status(self, message):
+        """Updates the text in the status bar"""
+        if self.current_image is not None:
+            h, w, _ = self.current_image.shape
+            info = f" | Size: {w}x{h} px"
+        else:
+            info = ""
+        self.status_var.set(message + info)
+        
     def update_status(self, message):
         pass
 
