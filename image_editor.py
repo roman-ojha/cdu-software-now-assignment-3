@@ -1,4 +1,7 @@
 import tkinter as tk
+from tkinter import filedialog, messagebox, simpledialog
+import cv2
+from PIL import Image, ImageTk
 
 
 class ImageEditorApp:
@@ -140,10 +143,25 @@ class ImageEditorApp:
         pass
 
     def save_image(self):
-        pass
+        if self.current_image is None:
+            messagebox.showwarning("Warning", "No image to save.")
+            return
+        if self.filepath:
+            cv2.imwrite(self.filepath, self.current_image)
+            messagebox.showinfo("Success", "Image saved successfully.")
+        else:
+            self.save_image_as()
 
     def save_image_as(self):
-        pass
+        if self.current_image is None:
+            messagebox.showwarning("Warning", "No image to save.")
+            return
+        file_path = filedialog.asksaveasfilename(defaultextension=".jpg",
+                                                 filetypes=[("JPEG", "*.jpg"), ("PNG", "*.png"), ("BMP", "*.bmp")])
+        if file_path:
+            cv2.imwrite(file_path, self.current_image)
+            self.filepath = file_path
+            messagebox.showinfo("Success", "Image saved successfully.")
 
     # Display Logic
     def display_image(self):
