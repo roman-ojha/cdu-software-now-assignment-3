@@ -2,6 +2,9 @@ import tkinter as tk
 from tkinter import filedialog, messagebox, simpledialog
 import cv2
 from PIL import Image, ImageTk
+import os
+from image_processor import ImageProcessor
+from history_manager import HistoryManager
 
 
 class ImageEditorApp:
@@ -14,6 +17,10 @@ class ImageEditorApp:
         self.root = root
         self.root.title("HIT137 Group Assignment 3 - Image Editor")
         self.root.geometry("1100x700")
+
+        # Creating instances of HistoryManager inside ImageEditorApp class
+        self.processor = ImageProcessor()
+        self.history = HistoryManager()
 
         # State Variables
         self.current_image = None
