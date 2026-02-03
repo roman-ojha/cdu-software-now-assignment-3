@@ -230,15 +230,35 @@ class ImageEditorApp:
             info = ""
         self.status_var.set(message + info)
         
-    def update_status(self, message):
-        pass
+    def save_state(self):
+        """Helper to push current state to history before modification."""
+        if self.current_image is not None:
+            self.history.push_state(self.current_image)
 
-    # Filter Callbacks
+    # Filter Callbacks (Events)
     def apply_grayscale(self):
-        pass
+        if self.current_image is not None:
+            self.save_state()
+            # If image is already grayscale (2 dim), don't fail, but processing expects BGR usually
+            if len(self.current_image.shape) == 2:
+                # Convert back to BGR so other filters work seamlessly
+                self.current_image = cv2.cvtColor(
+                    self.current_image, cv2.COLOR_GRAY2BGR)
+
+            gray = self.processor.to_grayscale(self.current_image)
+            # Convert back to BGR for consistent handling in other filters
+            self.current_image = cv2.cvtColor(gray, cv2.COLOR_GRAY2BGR)
+            self.display_image()
+            self.update_status("Applied Grayscale")
 
     def apply_blur(self):
-        pass
+        if self.current_image is not None:
+            self.save_state()
+            val = self.blur_scale.get()
+            self.current_image = self.processor.apply_blur(
+                self.current_image, val)
+            self.display_image()
+            self.update_status(f"Applied Blur (Level {val})")
 
     def apply_edge_detection(self):
         pass
