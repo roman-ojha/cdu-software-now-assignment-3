@@ -147,7 +147,21 @@ class ImageEditorApp:
 
     # File Operations
     def open_image(self):
-        pass
+        file_path = filedialog.askopenfilename(
+            filetypes=[("Image Files", "*.jpg *.jpeg *.png *.bmp")])
+        if file_path:
+            self.filepath = file_path
+            # Read image using OpenCV
+            img = cv2.imread(file_path)
+            if img is None:
+                messagebox.showerror("Error", "Could not load image.")
+                return
+
+            self.current_image = img
+            # Clear history when loading new image
+            self.history = HistoryManager()
+            self.display_image()
+            self.update_status(f"Loaded: {os.path.basename(file_path)}")
 
     def save_image(self):
         if self.current_image is None:
@@ -244,9 +258,21 @@ class ImageEditorApp:
     def apply_resize(self):
         pass
 
-    # Undo and Redo
+    # Undo / Redo
     def undo_action(self):
-        pass
+        prev = self.history.undo(self.current_image)
+        if prev is not None:
+            self.current_image = prev
+            self.display_image()
+            self.update_status("Undo performed")
+        else:
+            messagebox.showinfo("Info", "Nothing to undo")
 
     def redo_action(self):
-        pass
+        nxt = self.history.redo(self.current_image)
+        if nxt is not None:
+            self.current_image = nxt
+            self.display_image()
+            self.update_status("Redo performed")
+        else:
+            messagebox.showinfo("Info", "Nothing to redo")
