@@ -186,40 +186,40 @@ class ImageEditorApp:
 
     # Display Logic
     def display_image(self):
-            """Converts OpenCV BGR image to Tkinter format and displays it."""
-            if self.current_image is None:
-                return
+        """Converts OpenCV BGR image to Tkinter format and displays it."""
+        if self.current_image is None:
+            return
 
-            # Convert BGR from OpenCV to RGB Tkinter
-            img_rgb = cv2.cvtColor(self.current_image, cv2.COLOR_BGR2RGB)
+        # Convert BGR from OpenCV to RGB Tkinter
+        img_rgb = cv2.cvtColor(self.current_image, cv2.COLOR_BGR2RGB)
 
-            # Resize for display if too large to maintain aspect ratio
-            h, w = img_rgb.shape[:2]
-            display_w, display_h = 800, 600
+        # Resize for display if too large to maintain aspect ratio
+        h, w = img_rgb.shape[:2]
+        display_w, display_h = 800, 600
 
-            if w > display_w or h > display_h:
-                ratio = min(display_w/w, display_h/h)
-                new_w = int(w * ratio)
-                new_h = int(h * ratio)
-                img_rgb = cv2.resize(img_rgb, (new_w, new_h))
+        if w > display_w or h > display_h:
+            ratio = min(display_w/w, display_h/h)
+            new_w = int(w * ratio)
+            new_h = int(h * ratio)
+            img_rgb = cv2.resize(img_rgb, (new_w, new_h))
 
-            img_pil = Image.fromarray(img_rgb)
-            img_tk = ImageTk.PhotoImage(img_pil)
+        img_pil = Image.fromarray(img_rgb)
+        img_tk = ImageTk.PhotoImage(img_pil)
 
-            # Update Canvas
-            self.canvas.delete("all")
-            # Center the image
-            canvas_w = self.canvas.winfo_width()
-            canvas_h = self.canvas.winfo_height()
-            # Default center if canvas isn't drawn yet
-            if canvas_w < 1:
-                canvas_w = 800
-            if canvas_h < 1:
-                canvas_h = 600
+        # Update Canvas
+        self.canvas.delete("all")
+        # Center the image
+        canvas_w = self.canvas.winfo_width()
+        canvas_h = self.canvas.winfo_height()
+        # Default center if canvas isn't drawn yet
+        if canvas_w < 1:
+            canvas_w = 800
+        if canvas_h < 1:
+            canvas_h = 600
 
-            self.canvas.create_image(
-                canvas_w//2, canvas_h//2, image=img_tk, anchor=tk.CENTER)
-            self.canvas.image = img_tk  # Keep reference to prevent garbage collection
+        self.canvas.create_image(
+            canvas_w//2, canvas_h//2, image=img_tk, anchor=tk.CENTER)
+        self.canvas.image = img_tk  # Keep reference to prevent garbage collection
 
     def update_status(self, message):
         """Updates the text in the status bar"""
@@ -229,7 +229,7 @@ class ImageEditorApp:
         else:
             info = ""
         self.status_var.set(message + info)
-        
+
     def save_state(self):
         """Helper to push current state to history before modification."""
         if self.current_image is not None:
@@ -260,7 +260,7 @@ class ImageEditorApp:
             self.display_image()
             self.update_status(f"Applied Blur (Level {val})")
 
-   def apply_edge_detection(self):
+    def apply_edge_detection(self):
         if self.current_image is not None:
             self.save_state()
             self.current_image = self.processor.detect_edges(
@@ -293,6 +293,33 @@ class ImageEditorApp:
                 self.current_image, angle)
             self.display_image()
             self.update_status(f"Rotated {angle}°")
+
+    def apply_flip(self, mode):
+        if self.current_image is not None:
+            self.save_state()
+            self.current_image = self.processor.flip_image(
+                self.current_image, mode)
+            direction = "Horizontal" if mode == 1 else "Vertical"
+            self.display_image()
+            self.update_status(f"Flipped {direction}")
+
+    def apply_resize(self):
+        if self.current_image is not None:
+            # Open a dialog to ask for new width/height
+            dims = simpledialog.askstring(
+                "Resize", "Enter Width x Height (e.g. 800x600):")
+            if dims:
+                try:
+                    w_str, h_str = dims.lower().split('x')
+                    w, h = int(w_str), int(h_str)
+                    self.save_state()
+                    self.current_image = self.processor.resize_image(
+                        self.current_image, w, h)
+                    self.display_image()
+                    self.update_status(f"Resized to {w}x{h}")
+                except ValueError:
+                    messagebox.showerror(
+                        "Error", "Invalid format. Use WidthxHeight (e.g. 400x400)")
 
     # Undo / Redo
     def undo_action(self):
