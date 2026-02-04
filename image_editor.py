@@ -260,23 +260,39 @@ class ImageEditorApp:
             self.display_image()
             self.update_status(f"Applied Blur (Level {val})")
 
-    def apply_edge_detection(self):
-        pass
+   def apply_edge_detection(self):
+        if self.current_image is not None:
+            self.save_state()
+            self.current_image = self.processor.detect_edges(
+                self.current_image)
+            self.display_image()
+            self.update_status("Applied Edge Detection")
 
     def apply_brightness(self):
-        pass
+        if self.current_image is not None:
+            self.save_state()
+            val = self.bright_scale.get()
+            self.current_image = self.processor.adjust_brightness(
+                self.current_image, val)
+            self.display_image()
+            self.update_status(f"Adjusted Brightness ({val})")
 
     def apply_contrast(self):
-        pass
+        if self.current_image is not None:
+            self.save_state()
+            val = self.contrast_scale.get()
+            self.current_image = self.processor.adjust_contrast(
+                self.current_image, val)
+            self.display_image()
+            self.update_status(f"Adjusted Contrast (x{val})")
 
     def apply_rotate(self, angle):
-        pass
-
-    def apply_flip(self, mode):
-        pass
-
-    def apply_resize(self):
-        pass
+        if self.current_image is not None:
+            self.save_state()
+            self.current_image = self.processor.rotate_image(
+                self.current_image, angle)
+            self.display_image()
+            self.update_status(f"Rotated {angle}°")
 
     # Undo / Redo
     def undo_action(self):
