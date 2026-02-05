@@ -10,7 +10,7 @@ from history_manager import HistoryManager
 class ImageEditorApp:
     """
     Main Application Class using Tkinter.
-    Manages the UI, captures user input, and coordinates the Processor and History.
+    This class will create the main window, setup the UI components, handle user interaction, and coordinate with the ImageProcessor and HistoryManager classes to perform image editing operations and manage undo/redo functionality.
     """
 
     def __init__(self, root):
@@ -52,7 +52,7 @@ class ImageEditorApp:
         self.root.config(menu=menubar)
 
     def _setup_layout(self):
-        """Sets up the main frames with controls button on left side and image display on right side."""
+        """This method sets up the main layout of the application, including the control panel on the right and the image display area on the left, as well as the status bar at the top."""
 
         # 1. Control Panel on Right Side
         self.controls_frame = tk.Frame(
@@ -145,8 +145,8 @@ class ImageEditorApp:
             container, textvariable=self.status_var, bd=1, relief=tk.SUNKEN, anchor=tk.W)
         self.status_bar.pack(side=tk.TOP, fill=tk.X)
 
-    # File Operations
     def open_image(self):
+        """This method opens a file dialog to select an image, loads it using OpenCV, and displays it on the canvas. It also resets the history and updates the status bar."""
         file_path = filedialog.askopenfilename(
             filetypes=[("Image Files", "*.jpg *.jpeg *.png *.bmp")])
         if file_path:
@@ -164,6 +164,7 @@ class ImageEditorApp:
             self.update_status(f"Loaded: {os.path.basename(file_path)}")
 
     def save_image(self):
+        """This method will save the image"""
         if self.current_image is None:
             messagebox.showwarning("Warning", "No image to save.")
             return
@@ -174,6 +175,7 @@ class ImageEditorApp:
             self.save_image_as()
 
     def save_image_as(self):
+        """this method will be used to save the image with a new name or location"""
         if self.current_image is None:
             messagebox.showwarning("Warning", "No image to save.")
             return
@@ -186,7 +188,7 @@ class ImageEditorApp:
 
     # Display Logic
     def display_image(self):
-        """Converts OpenCV BGR image to Tkinter format and displays it."""
+        """This method will display the current image on the canvas."""
         if self.current_image is None:
             return
 
@@ -222,7 +224,7 @@ class ImageEditorApp:
         self.canvas.image = img_tk  # Keep reference to prevent garbage collection
 
     def update_status(self, message):
-        """Updates the text in the status bar"""
+        """This method will update the text in the status bar with the provided message and also include image dimensions if an image is loaded."""
         if self.current_image is not None:
             h, w, _ = self.current_image.shape
             info = f" | Size: {w}x{h} px"
@@ -237,6 +239,7 @@ class ImageEditorApp:
 
     # Filter Callbacks (Events)
     def apply_grayscale(self):
+        """Ths method will apply grayscale filter to the current image."""
         if self.current_image is not None:
             self.save_state()
             # If image is already grayscale (2 dim), don't fail, but processing expects BGR usually
@@ -252,6 +255,7 @@ class ImageEditorApp:
             self.update_status("Applied Grayscale")
 
     def apply_blur(self):
+        """This method will apply a blur effect to the current image based on the intensity selected in the blur slider."""
         if self.current_image is not None:
             self.save_state()
             val = self.blur_scale.get()
@@ -261,6 +265,7 @@ class ImageEditorApp:
             self.update_status(f"Applied Blur (Level {val})")
 
     def apply_edge_detection(self):
+        """This method will apply edge detection to the current image"""
         if self.current_image is not None:
             self.save_state()
             self.current_image = self.processor.detect_edges(
@@ -269,6 +274,7 @@ class ImageEditorApp:
             self.update_status("Applied Edge Detection")
 
     def apply_brightness(self):
+        """This method will adjust the brightness of the current image based on the value selected in the brightness slider."""
         if self.current_image is not None:
             self.save_state()
             val = self.bright_scale.get()
@@ -278,6 +284,7 @@ class ImageEditorApp:
             self.update_status(f"Adjusted Brightness ({val})")
 
     def apply_contrast(self):
+        """This method will adjust the contrast of the current image based on the value selected in the contrast slider."""
         if self.current_image is not None:
             self.save_state()
             val = self.contrast_scale.get()
@@ -287,6 +294,7 @@ class ImageEditorApp:
             self.update_status(f"Adjusted Contrast (x{val})")
 
     def apply_rotate(self, angle):
+        """This method will rotate the current image by the specified angle to 90, 180, or 270 degrees when the corresponding rotation button is clicked."""
         if self.current_image is not None:
             self.save_state()
             self.current_image = self.processor.rotate_image(
@@ -295,6 +303,7 @@ class ImageEditorApp:
             self.update_status(f"Rotated {angle}°")
 
     def apply_flip(self, mode):
+        """This method will flip the current image either horizontally or vertically based on the mode parameter when the corresponding flip button is clicked. """
         if self.current_image is not None:
             self.save_state()
             self.current_image = self.processor.flip_image(
@@ -304,6 +313,7 @@ class ImageEditorApp:
             self.update_status(f"Flipped {direction}")
 
     def apply_resize(self):
+        """This method will resize the current image based on user input for new width and height, First it will opens a dialog to ask for dimensions in the format "<width>x<height>" for an example "800x600" and then validates the input and then apply the resizing if the given input is valid, but if the input format is incorrect then it shows an error message"""
         if self.current_image is not None:
             # Open a dialog to ask for new width/height
             dims = simpledialog.askstring(
@@ -321,8 +331,8 @@ class ImageEditorApp:
                     messagebox.showerror(
                         "Error", "Invalid format. Use WidthxHeight (e.g. 400x400)")
 
-    # Undo / Redo
     def undo_action(self):
+        """This method will do the undo action by getting the previous image from the history manager and updating the current image and display it to the canvas"""
         prev = self.history.undo(self.current_image)
         if prev is not None:
             self.current_image = prev
@@ -332,6 +342,7 @@ class ImageEditorApp:
             messagebox.showinfo("Info", "Nothing to undo")
 
     def redo_action(self):
+        """This method will do the redo action by getting the next image from the history manager and updating the current image and display it to the canvas"""
         nxt = self.history.redo(self.current_image)
         if nxt is not None:
             self.current_image = nxt
